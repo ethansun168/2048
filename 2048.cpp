@@ -132,6 +132,7 @@ void Board::combineLeft() {
         int combinedRow[4] = { 0,0,0,0 };
         int index = 0;
         for (int col = 0; col < BOARD_SIZE; col++) {
+
             if (board[row][col] != 0) {
                 combinedRow[index++] = board[row][col];
             }
@@ -144,7 +145,18 @@ void Board::combineLeft() {
             }
         }
 
+
         // Copy combined row back to the original row
+        for (int i = 0; i < 4; ++i) {
+            board[row][i] = combinedRow[i];
+        }
+
+        index = 0;
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (board[row][col] != 0) {
+                combinedRow[index++] = board[row][col];
+            }
+        }
         for (int i = 0; i < 4; ++i) {
             board[row][i] = combinedRow[i];
         }
