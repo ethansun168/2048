@@ -75,6 +75,7 @@ bool Board::generate() {
 
     int num = 2 * (rand() % 2 + 1);
     board[row][col] = num;
+    cout << endl << "Generated " << num << " at (" << col + 1 << ", " << BOARD_SIZE - row << ")" << endl;
 
     return true;
 }
@@ -132,33 +133,28 @@ void Board::combineLeft() {
         int combinedRow[4] = { 0,0,0,0 };
         int index = 0;
         for (int col = 0; col < BOARD_SIZE; col++) {
-
             if (board[row][col] != 0) {
                 combinedRow[index++] = board[row][col];
             }
         }
         // Combine adjacent numbers with the same value
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < BOARD_SIZE - 1; ++i) {
             if (combinedRow[i] == combinedRow[i + 1]) {
                 combinedRow[i] *= 2;
                 combinedRow[i + 1] = 0;
             }
         }
-
-
-        // Copy combined row back to the original row
-        for (int i = 0; i < 4; ++i) {
-            board[row][i] = combinedRow[i];
-        }
-
         index = 0;
+        int actualCombinedRow[4] = { 0,0,0,0 };
         for (int col = 0; col < BOARD_SIZE; col++) {
-            if (board[row][col] != 0) {
-                combinedRow[index++] = board[row][col];
+            if (combinedRow[col] != 0) {
+                actualCombinedRow[index++] = combinedRow[col];
             }
         }
-        for (int i = 0; i < 4; ++i) {
-            board[row][i] = combinedRow[i];
+
+        // Copy combined row back to the original row
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            board[row][i] = actualCombinedRow[i];
         }
     }
 }
