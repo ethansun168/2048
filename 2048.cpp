@@ -14,12 +14,14 @@ private:
     void combineLeft();
 public:
     Board();
-    void print();
+    void print() const;
     //true if success, false if board is full and cannot generate
-    bool generate();
+    void generate();
     void combine(char move);
-    bool full();
-
+    bool full() const;
+    bool gameOver() const;
+    bool isEqual(const Board& other) const;
+    Board& operator=(const Board& other);
 };
 
 Board::Board() {
@@ -30,7 +32,7 @@ Board::Board() {
     }
 }
 
-void Board::print() {
+void Board::print() const {
     cout << "____________________________" << endl;
     for (int row = 0; row < BOARD_SIZE; row++) {
 
@@ -57,7 +59,7 @@ void Board::print() {
     }
 }
 
-bool Board::generate() {
+void Board::generate() {
     /* initialize random seed: */
     srand(time(NULL));
 
@@ -67,17 +69,25 @@ bool Board::generate() {
     int col = rand() % 4;
     while (board[row][col] != 0) {
         if (full()) {
-            return false;
+            return;
         }
         row = rand() % 4;
         col = rand() % 4;
     }
 
-    int num = 2 * (rand() % 2 + 1);
-    board[row][col] = num;
-    cout << endl << "Generated " << num << " at (" << col + 1 << ", " << BOARD_SIZE - row << ")" << endl;
-
-    return true;
+    //1 to 10, if 1, generate 4, else generate 2
+    //simulates 90% 2 and 10% 4
+    int num = rand() % 10 + 1;
+    if (num == 1) {
+        board[row][col] = 4;
+    }
+    else {
+        board[row][col] = 2;
+    }
+    
+    
+    //DEBUG
+    //cout << endl << "DEBUG: Generated " << num << " at (" << col + 1 << ", " << BOARD_SIZE - row << ")" << endl;
 }
 
 void Board::combine(char move) {
@@ -159,7 +169,7 @@ void Board::combineLeft() {
     }
 }
 
-bool Board::full() {
+bool Board::full() const {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
             if (board[row][col] == 0) {
@@ -170,10 +180,60 @@ bool Board::full() {
     return true;
 }
 
+bool Board::gameOver() const {
+    if (full()) {
+        int boardIndex = BOARD_SIZE - 1;
+        //row 0,1,2; col 0,1,2
+        for (int row = 0; row < boardIndex; row++) {
+            for (int col = 0; col < boardIndex; col++) {
+                if (board[row][col] == board[row + 1][col] ||
+                    board[row][col] == board[row][col + 1]) {
+                    return false;
+                }
+            }
+        }
+
+        //last col and last row
+        
+        for (int i = 0; i < boardIndex; i++) {
+            if (board[boardIndex][i] == board[boardIndex][i + 1] ||
+                board[i][boardIndex] == board[i + 1][boardIndex]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+Board& Board::operator=(const Board& other) {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            board[row][col] = other.board[row][col];
+        }
+    }
+    return *this;
+}
+
+bool Board::isEqual(const Board& other) const {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (board[row][col] != other.board[row][col]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool operator!=(const Board& lhs, const Board& rhs) {
+    return !lhs.isEqual(rhs);
+}
+
 int main() {
     Board board;
-
-    while (board.generate()) {
+    board.generate();
+    while (!board.gameOver()) {
         board.print();
         cout << "Move (w,a,s,d): \n";
         char move;
@@ -185,9 +245,15 @@ int main() {
             getline(cin, temp);
             cin >> move;
         }
+        
+        //if new board == old board, dont generate
+        Board tempBoard = board;
         board.combine(move);
+        if (tempBoard != board) {
+            board.generate();
+        }
     }
-
+    board.print();
     cout << "Game over";
     return 0;
 }
