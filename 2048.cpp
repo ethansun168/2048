@@ -9,7 +9,7 @@ using namespace std;
 
 class Board {
 private:
-    static const int BOARD_SIZE = 20;
+    static const int BOARD_SIZE = 4;
     int board[BOARD_SIZE][BOARD_SIZE];
     void combineLeft();
 public:
