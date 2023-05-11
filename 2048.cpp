@@ -3,26 +3,71 @@
 #include <stdlib.h>     
 #include <time.h>       
 
-
-
 using namespace std;
 
 class Board {
 private:
     int boardSize;
     int* board;
+
+    /*
+    effect: helper function for combine()
+    */
     void combineLeft();
+
+    /*
+    requires row and col > 0 && row and col < boardSize
+    effect: returns the index based on row and col
+        simulates board[row][col], since board is a 1d array
+    */
     size_t index(int row, int col) const;
 public:
-    //initialize to 0
+    /*
+    Board constructor
+    requires: size is between 2 and 25
+    modifies: board
+    effect: initialize board to 0, set boardSize to size
+    */
     Board(int size);
+
+    /*
+    modifies: cout
+    effect: print the board in a pretty way
+    */
     void print() const;
+
+    /*
+    modifies: board
+    effect: generate a number based on the rules of 2048
+        90% 2 and 10% 4 in a random square on the board
+        if the chosen square already contains a number, find a new square to generate in
+    */
     void generate();
+
+    /*
+    requires: move is 'a', 'w', 's', or 'd'
+    modifies: board
+    effect: combines the board based on the rules of 2048
+        do not generate() if the board state does not change
+    */
     void combine(char move);
+
+    /*
+    effect: returns true if board is full, false if board is not full
+    */
     bool full() const;
+
+    /*
+    effect: returns true if the game is over based on the rules of 2048
+        the game is over when there are no valid moves and the board is full
+    */
     bool gameOver() const;
+
+    /*
+    effect: returns true if this->board contains the same numbers as other.board
+    */
     bool isEqual(const Board& other) const;
-    
+
     //big three
     Board(const Board& other);
     Board& operator=(const Board& rhs);
@@ -40,7 +85,7 @@ Board::Board(int size) {
 }
 
 size_t Board::index(int row, int col) const {
-    return row + boardSize * col; 
+    return row + boardSize * col;
 }
 
 void Board::print() const {
@@ -101,7 +146,7 @@ void Board::generate() {
     else {
         board[index(row, col)] = 2;
     }
-    
+
     //DEBUG
     //cout << endl << "DEBUG: Generated " << num << " at (" << col + 1 << ", " << boardSize - row << ")" << endl;
 }
@@ -112,7 +157,7 @@ void Board::combine(char move) {
         for (int j = 0; j < boardSize; j++) {
             switch (move) {
             case 'w':
-                transposedBoard.board[index(i,j)] = board[index(j, i)];
+                transposedBoard.board[index(i, j)] = board[index(j, i)];
                 break;
             case 'a':
                 transposedBoard.board[index(i, j)] = board[index(i, j)];
@@ -149,7 +194,7 @@ void Board::combine(char move) {
 
 void Board::combineLeft() {
     for (int row = 0; row < boardSize; row++) {
-        
+
         int* combinedRow = new int[boardSize];
         for (int i = 0; i < boardSize; i++) {
             combinedRow[i] = 0;
@@ -216,7 +261,7 @@ bool Board::gameOver() const {
         }
 
         //last col and last row
-        
+
         for (int i = 0; i < boardIndex; i++) {
             if (board[index(boardIndex, i)] == board[index(boardIndex, i + 1)] ||
                 board[index(i, boardIndex)] == board[index(i + 1, boardIndex)]) {
