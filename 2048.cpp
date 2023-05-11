@@ -15,7 +15,6 @@ private:
 public:
     Board();
     void print() const;
-    //true if success, false if board is full and cannot generate
     void generate();
     void combine(char move);
     bool full() const;
@@ -37,7 +36,6 @@ void Board::print() const {
         cout << "_______";
     }
     cout << endl;
-    //cout << "____________________________" << endl;
     for (int row = 0; row < BOARD_SIZE; row++) {
 
         for (int col = 0; col < BOARD_SIZE; col++) {
@@ -63,7 +61,6 @@ void Board::print() const {
             cout << "|______";
         }
         cout << "|" << endl;
-        //cout << "|______|______|______|______|" << endl;
     }
 }
 
@@ -71,7 +68,7 @@ void Board::generate() {
     /* initialize random seed: */
     srand(time(NULL));
 
-    /* generate secret number between 0 and 3: */
+    /* generate secret number between 0 and BOARD_SIZE: */
 
     int row = rand() % BOARD_SIZE;
     int col = rand() % BOARD_SIZE;
@@ -92,7 +89,6 @@ void Board::generate() {
     else {
         board[row][col] = 2;
     }
-    
     
     //DEBUG
     //cout << endl << "DEBUG: Generated " << num << " at (" << col + 1 << ", " << BOARD_SIZE - row << ")" << endl;
