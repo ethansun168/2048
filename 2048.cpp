@@ -20,7 +20,6 @@ public:
     bool full() const;
     bool gameOver() const;
     bool isEqual(const Board& other) const;
-    Board& operator=(const Board& other);
 };
 
 Board::Board() {
@@ -95,48 +94,41 @@ void Board::generate() {
 }
 
 void Board::combine(char move) {
-    if (move == 'w') {
-        Board transposedBoard;
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
+    Board transposedBoard;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            switch (move) {
+            case 'w':
                 transposedBoard.board[i][j] = board[j][i];
-            }
-        }
-        transposedBoard.combineLeft();
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
-                board[i][j] = transposedBoard.board[j][i];
-            }
-        }
-    }
-    else if (move == 'a') {
-        combineLeft();
-    }
-    else if (move == 's') {
-        Board transposedBoard;
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
+                break;
+            case 'a':
+                transposedBoard.board[i][j] = board[i][j];
+                break;
+            case 's':
                 transposedBoard.board[i][j] = board[BOARD_SIZE - j - 1][BOARD_SIZE - i - 1];
-            }
-        }
-        transposedBoard.combineLeft();
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
-                board[i][j] = transposedBoard.board[BOARD_SIZE - j - 1][BOARD_SIZE - i - 1];
+                break;
+            case 'd':
+                transposedBoard.board[i][j] = board[i][BOARD_SIZE - j - 1];
+                break;
             }
         }
     }
-    else {
-        Board transposedBoard;
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
-                transposedBoard.board[i][j] = board[i][BOARD_SIZE - j - 1];
-            }
-        }
-        transposedBoard.combineLeft();
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
+    transposedBoard.combineLeft();
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            switch (move) {
+            case 'w':
+                board[i][j] = transposedBoard.board[j][i];
+                break;
+            case 'a':
+                board[i][j] = transposedBoard.board[i][j];
+                break;
+            case 's':
+                board[i][j] = transposedBoard.board[BOARD_SIZE - j - 1][BOARD_SIZE - i - 1];
+                break;
+            case 'd':
                 board[i][j] = transposedBoard.board[i][BOARD_SIZE - j - 1];
+                break;
             }
         }
     }
@@ -208,15 +200,6 @@ bool Board::gameOver() const {
         return true;
     }
     return false;
-}
-
-Board& Board::operator=(const Board& other) {
-    for (int row = 0; row < BOARD_SIZE; row++) {
-        for (int col = 0; col < BOARD_SIZE; col++) {
-            board[row][col] = other.board[row][col];
-        }
-    }
-    return *this;
 }
 
 bool Board::isEqual(const Board& other) const {
