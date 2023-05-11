@@ -9,7 +9,7 @@ using namespace std;
 
 class Board {
 private:
-    static const int BOARD_SIZE = 4;
+    static const int BOARD_SIZE = 20;
     int board[BOARD_SIZE][BOARD_SIZE];
     void combineLeft();
 public:
@@ -33,7 +33,11 @@ Board::Board() {
 }
 
 void Board::print() const {
-    cout << "____________________________" << endl;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        cout << "_______";
+    }
+    cout << endl;
+    //cout << "____________________________" << endl;
     for (int row = 0; row < BOARD_SIZE; row++) {
 
         for (int col = 0; col < BOARD_SIZE; col++) {
@@ -55,7 +59,11 @@ void Board::print() const {
             }
         }
         cout << "|" << endl;
-        cout << "|______|______|______|______|" << endl;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            cout << "|______";
+        }
+        cout << "|" << endl;
+        //cout << "|______|______|______|______|" << endl;
     }
 }
 
@@ -65,14 +73,14 @@ void Board::generate() {
 
     /* generate secret number between 0 and 3: */
 
-    int row = rand() % 4;
-    int col = rand() % 4;
+    int row = rand() % BOARD_SIZE;
+    int col = rand() % BOARD_SIZE;
     while (board[row][col] != 0) {
         if (full()) {
             return;
         }
-        row = rand() % 4;
-        col = rand() % 4;
+        row = rand() % BOARD_SIZE;
+        col = rand() % BOARD_SIZE;
     }
 
     //1 to 10, if 1, generate 4, else generate 2
@@ -140,7 +148,7 @@ void Board::combine(char move) {
 
 void Board::combineLeft() {
     for (int row = 0; row < BOARD_SIZE; row++) {
-        int combinedRow[4] = { 0,0,0,0 };
+        int combinedRow[BOARD_SIZE] = { 0 };
         int index = 0;
         for (int col = 0; col < BOARD_SIZE; col++) {
             if (board[row][col] != 0) {
@@ -155,7 +163,7 @@ void Board::combineLeft() {
             }
         }
         index = 0;
-        int actualCombinedRow[4] = { 0,0,0,0 };
+        int actualCombinedRow[BOARD_SIZE] = { 0 };
         for (int col = 0; col < BOARD_SIZE; col++) {
             if (combinedRow[col] != 0) {
                 actualCombinedRow[index++] = combinedRow[col];
@@ -234,6 +242,7 @@ int main() {
     Board board;
     board.generate();
     while (!board.gameOver()) {
+        system("cls");
         board.print();
         cout << "Move (w,a,s,d): \n";
         char move;
