@@ -21,6 +21,11 @@ private:
         simulates board[row][col], since board is a 1d array
     */
     size_t index(int row, int col) const;
+
+    /*
+    effect: copies other.board and other.boardSize
+    */
+    void copy(const Board& other);
 public:
     /*
     Board constructor
@@ -141,9 +146,11 @@ void Board::generate() {
     //simulates 90% 2 and 10% 4
     int num = rand() % 10 + 1;
     if (num == 1) {
+        num = 4;
         board[index(row, col)] = 4;
     }
     else {
+        num = 2;
         board[index(row, col)] = 2;
     }
 
@@ -274,6 +281,9 @@ bool Board::gameOver() const {
 }
 
 bool Board::isEqual(const Board& other) const {
+    if (boardSize != other.boardSize) {
+        return false;
+    }
     for (int row = 0; row < boardSize; row++) {
         for (int col = 0; col < boardSize; col++) {
             if (board[index(row, col)] != other.board[index(row, col)]) {
@@ -288,8 +298,7 @@ bool operator!=(const Board& lhs, const Board& rhs) {
     return !lhs.isEqual(rhs);
 }
 
-//copy ctor
-Board::Board(const Board& other) {
+void Board::copy(const Board& other) {
     boardSize = other.boardSize;
     board = new int[boardSize * boardSize];
     for (int row = 0; row < boardSize; row++) {
@@ -299,19 +308,18 @@ Board::Board(const Board& other) {
     }
 }
 
+//copy ctor
+Board::Board(const Board& other) {
+    copy(other);
+}
+
 //assignment operator
 Board& Board::operator=(const Board& rhs) {
     if (this == &rhs) {
         return *this;
     }
     delete[] board;
-    boardSize = rhs.boardSize;
-    for (int row = 0; row < boardSize; row++) {
-        for (int col = 0; col < boardSize; col++) {
-            board[index(row, col)] = rhs.board[index(row, col)];
-        }
-    }
-
+    copy(rhs);
     return *this;
 }
 
